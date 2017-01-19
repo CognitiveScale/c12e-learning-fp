@@ -2,7 +2,7 @@ package com.c12e.learn
 package data
 
 
-import com.c12e.learn.typeclass.{ Equal, Functor, Applicative }
+import com.c12e.learn.typeclass.{ Equal, Applicative }
 import com.c12e.learn.typeclass.Equal.Syntax._
 
 sealed trait \/[A, B] {
