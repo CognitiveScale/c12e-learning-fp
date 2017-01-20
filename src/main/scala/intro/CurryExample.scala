@@ -41,15 +41,15 @@ object CurryExample extends App {
   println(addHofOne(100))
 
   def curry[A, B, C](f: (A, B) => C): A => B => C =
-    a => b => f(a, b)
+    ???
 
   def uncurry[A, B, C](f: A => B => C): (A, B) => C =
-    (a, b) => f(a)(b)
+    ???
 
   def flip[A, B, C](f: A => B => C): B => A => C =
-    b => a => f(a)(b)
+    ???
 
   def curryHof[A, B, C]: ((A, B) => C) => (A => B => C) =
-    f => a => b => f(a, b)
+    ???
 
 }

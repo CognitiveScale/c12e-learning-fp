@@ -1,6 +1,7 @@
 package com.c12e.learn
 
 
+/*
 import com.c12e.learn.data.Nel
 import com.c12e.learn.data.\/.Syntax._
 import com.c12e.learn.typeclass.Functor
@@ -33,3 +34,4 @@ object ExampleApp extends App {
       .apply(5))
 
 }
+*/
