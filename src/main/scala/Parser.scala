@@ -22,8 +22,21 @@ final case class Parser[A](parse: String => Option[(A, String)]) extends AnyVal 
     Parser {str => parse(str).flatMap { case (a, rest) => f(a).parse(rest)}}
   
 
-  def ap[B](f: Parser[A => B]): Parser[B] = ??? 
+  def ap[B](p: Parser[A => B]): Parser[B] = 
+    //Parser {str => parse(str).map {case (a, rest) => p.parse(rest) }}
+    for {
+      a <- this
+      f <- p
+    } yield f(a)
 
+  def orElse(p: Parser[A]): Parser[A] = 
+    Parser { str => parse(str) orElse p.parse(str) }
+        
+  // regex +
+  def oneOrMore: Parser[List[A]] = ???
+
+  // regex *
+  def zeroOrMore: Parser[List[A]] = ???
 }
 
 object Parser{
@@ -68,12 +81,11 @@ object Parser{
     //}
      
   val condParse: Parser[(Int, String)] =
-    // digitInt.flatMap { i => (if (i == 3) digitStr else alpha).map { a => (i, a) } }
+//    digitInt.flatMap { i => (if (i == 3) digitStr else alpha).map { a => (i, a) } }
     for {
       i <- digitInt
       a  <- if (i == 3) digitStr else alpha
     } yield  (i, a)
-
 }
 
 object ParserApp extends App{
@@ -99,5 +111,8 @@ object ParserApp extends App{
   assert(condParse.parse("01b") == None)
   assert(condParse.parse("31b") == Some(((3,"1"), "b")))
   assert(condParse.parse("3ab") == None)
+
+  assert(digitStr.orElse(alpha).parse("abc")  == Some(("a", "bc")))
+  assert(digitStr.orElse(alpha).parse("0bc")  == Some(("0", "bc")))
 
 }
