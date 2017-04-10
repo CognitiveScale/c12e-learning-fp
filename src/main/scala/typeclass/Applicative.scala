@@ -20,14 +20,17 @@ object Applicative {
   }
 
   class Ops2[F[_], A](val fa: F[A]) extends AnyVal {
+    @SuppressWarnings(Array("org.wartremover.warts.ImplicitParameter"))
     def <*>[B](f: F[A => B])(implicit ev: Applicative[F]): F[B] = ev.ap(fa)(f)
   }
 
   trait Syntax extends Functor.Syntax {
 
+    @SuppressWarnings(Array("org.wartremover.warts.ImplicitConversion"))
     implicit def toApplicativeOps1[A](a: A): Ops1[A] =
       new Ops1(a)
 
+    @SuppressWarnings(Array("org.wartremover.warts.ImplicitConversion"))
     implicit def toApplicativeOps2[F[_] : Applicative, A]
         (fa: F[A]): Ops2[F, A] =
       new Ops2(fa)
@@ -43,22 +46,26 @@ object Applicative {
 
     def applicativeIdentity[F[_] : Applicative, A]
         (fa: F[A])
-        (implicit ev: Equal[F[A]]) =
+        (implicit ev: Equal[F[A]])
+        : Boolean =
       (fa <*> (identity[A] _).pure[F]) === fa
 
     def applicativeHomomorphism[F[_] : Applicative, A, B]
         (a: A, ab: A => B)
-        (implicit ev: Equal[F[B]]) =
+        (implicit ev: Equal[F[B]])
+        : Boolean =
       (a.pure[F] <*> ab.pure[F]) === ab(a).pure[F]
 
     def applicativeInterchange[F[_] : Applicative, A, B]
         (a: A, f: F[A => B])
-        (implicit ev: Equal[F[B]]) =
+        (implicit ev: Equal[F[B]])
+        : Boolean =
       (a.pure[F] <*> f) === (f <*> { (ff: A => B) => ff(a) }.pure[F])
 
     def applicativeComposition[F[_] : Applicative, A, B, C]
         (fa: F[A], fab: F[A => B], fbc: F[B => C])
-        (implicit ev: Equal[F[C]]) = {
+        (implicit ev: Equal[F[C]])
+        : Boolean = {
       val lhs = (fa <*> fab) <*> fbc
       val rhs =
         (fa <*>
@@ -69,7 +76,8 @@ object Applicative {
 
     def applicativeDerivedMap[F[_] : Applicative, A, B]
         (f: A => B, fa: F[A])
-        (implicit ev: Equal[F[B]]) =
+        (implicit ev: Equal[F[B]])
+        : Boolean =
       fa.map(f) === (fa <*> f.pure[F])
 
   }

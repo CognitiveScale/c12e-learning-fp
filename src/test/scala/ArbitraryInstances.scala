@@ -32,12 +32,14 @@ trait ArbitraryInstances {
   implicit def maxArbitrary[A : Arbitrary]: Arbitrary[Max[A]] =
     arb[A] map Max.apply
 
+  /*
   implicit def maybeArbitrary[A : Arbitrary]: Arbitrary[Maybe[A]] =
     arb[Option[A]] map { _.fold(Maybe.empty[A])(Maybe.just) }
 
   implicit def disjunctionArbitrary[A : Arbitrary, B : Arbitrary]
       : Arbitrary[A \/ B] =
     arb[Either[A, B]] map { _.fold(\/.left, \/.right) }
+  */
 
   private def arb[A](implicit ev: Arbitrary[A]): Arbitrary[A] = ev
 

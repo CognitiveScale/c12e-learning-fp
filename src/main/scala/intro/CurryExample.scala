@@ -30,10 +30,10 @@ object CurryExample extends App {
   println(addHofUncurried.tupled((1, 2)))
   println(addHofUncurriedTupled((1, 2)))
 
-  val addPartialOne = add(1, _: Int) //Partial application
-  val addCurryOne = addCurry(1)_ // Eta expansion?
-  val addCurryManualOne = addCurryManual(1)
-  val addHofOne = addHof(1)
+  val addPartialOne: Int => Int = add(1, _: Int) //Partial application
+  val addCurryOne: Int => Int = addCurry(1)_ // Eta expansion?
+  val addCurryManualOne: Int => Int = addCurryManual(1)
+  val addHofOne: Int => Int = addHof(1)
 
   println(addPartialOne(100))
   println(addCurryOne(100))

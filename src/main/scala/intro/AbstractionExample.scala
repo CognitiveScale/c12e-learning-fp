@@ -11,8 +11,8 @@ object PointI {
 
   def apply(_x: Int, _y: Int): PointI =
     new PointI {
-      def x = _x
-      def y = _y
+      def x: Int = _x
+      def y: Int = _y
     }
 
 }
@@ -50,10 +50,10 @@ final case class Point(x: Int, y: Int)
 
 object AbstractionExample extends App {
 
-  val pi = PointI(1,2)
-  val padt = PointADT(1,2)
-  val pc = PointC(1,2)
-  val p = Point(1,2)
+  val pi: PointI = PointI(1,2)
+  val padt: PointADT = PointADT(1,2)
+  val pc: PointC = PointC(1,2)
+  val p: Point = Point(1,2)
 
   println(pi.x)
   println(padt.x)

@@ -2,7 +2,7 @@ package com.c12e.learn
 package typeclass
 
 
-import com.c12e.learn.stdlib.syntax.BooleanSyntax
+import com.c12e.learn.syntax.stdlib.boolean._
 
 
 trait Equal[A] { self =>
@@ -11,7 +11,7 @@ trait Equal[A] { self =>
 
   def contramap[B](f: B => A): Equal[B] =
     new Equal[B] {
-      def equal(b1: B, b2: B) = self.equal(f(b1), f(b2))
+      def equal(b1: B, b2: B): Boolean = self.equal(f(b1), f(b2))
     }
 
 }
@@ -23,9 +23,13 @@ object Equal {
 
   def fromObject[A]: Equal[A] =
     new Equal[A] {
-      def equal(a1: A, a2: A) = a1 == a2
+      @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+      def equal(a1: A, a2: A): Boolean = a1 == a2
     }
 
+  implicit val boolean: Equal[Boolean] = fromObject[Boolean]
+
+  @SuppressWarnings(Array("org.wartremover.warts.ImplicitParameter"))
   class Ops[A](val a: A) extends AnyVal {
 
     def ===(b: A)(implicit ev: Equal[A]): Boolean = ev.equal(a, b)
@@ -35,6 +39,7 @@ object Equal {
   }
 
   trait Syntax {
+    @SuppressWarnings(Array("org.wartremover.warts.ImplicitConversion"))
     implicit def toEqualOps[A : Equal](a: A): Ops[A] = new Ops(a)
   }
 
@@ -43,15 +48,14 @@ object Equal {
   trait Laws {
 
     import Syntax._
-    import BooleanSyntax._
 
-    def equalReflexivity[A : Equal](a: A) =
+    def equalReflexivity[A : Equal](a: A): Boolean =
       a === a
 
-    def equalSymmetry[A : Equal](a: A, b: A) =
+    def equalSymmetry[A : Equal](a: A, b: A): Boolean =
       (a === b) implies (b === a)
 
-    def equalTransitivity[A : Equal](a: A, b: A, c: A) =
+    def equalTransitivity[A : Equal](a: A, b: A, c: A): Boolean =
       ((a === b) && (b === c)) implies (a === c)
 
   }

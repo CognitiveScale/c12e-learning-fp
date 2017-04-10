@@ -5,11 +5,8 @@ package test
 import scala.reflect.ClassTag
 
 import org.scalacheck._
-import org.scalacheck.Prop.Result
-import org.scalacheck.Gen.Parameters
 
 import com.c12e.learn.typeclass.Equal
-import com.c12e.learn.stdlib.instances.BooleanInstances._
 
 
 abstract class Spec(initContext: String)

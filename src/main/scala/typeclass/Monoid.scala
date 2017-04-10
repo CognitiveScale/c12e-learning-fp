@@ -9,7 +9,7 @@ trait Monoid[A] extends Semigroup[A] {
 
 object Monoid {
 
-  @inline def apply[A](implicit ev: Monoid[A]) = ev
+  @inline def apply[A](implicit ev: Monoid[A]): Monoid[A] = ev
 
   trait Syntax extends Semigroup.Syntax {
     def empty[A](implicit ev: Monoid[A]): A = ev.empty
@@ -22,10 +22,10 @@ object Monoid {
     import Syntax._
     import Equal.Syntax._
 
-    def monoidLeftIdentity[A : Monoid : Equal](a: A) =
+    def monoidLeftIdentity[A : Monoid : Equal](a: A): Boolean =
       (empty |+| a) === a
 
-    def monoidRightIdentity[A : Monoid: Equal](a: A) =
+    def monoidRightIdentity[A : Monoid: Equal](a: A): Boolean =
       (a |+| empty) === a
 
   }

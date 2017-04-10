@@ -9,13 +9,15 @@ trait Semigroup[A] {
 
 object Semigroup {
 
-  @inline def apply[A](implicit ev: Semigroup[A]) = ev
+  @inline def apply[A](implicit ev: Semigroup[A]): Semigroup[A] = ev
 
   final class Ops[A](val a: A) extends AnyVal {
-    def |+|(a2: A)(implicit ev: Semigroup[A]) = ev.append(a, a2)
+    @SuppressWarnings(Array("org.wartremover.warts.ImplicitParameter"))
+    def |+|(a2: A)(implicit ev: Semigroup[A]): A = ev.append(a, a2)
   }
 
   trait Syntax {
+    @SuppressWarnings(Array("org.wartremover.warts.ImplicitConversion"))
     implicit def semigroupToOps[A : Semigroup](a: A): Ops[A] =
       new Ops(a)
   }
@@ -27,7 +29,8 @@ object Semigroup {
     import Syntax._
     import Equal.Syntax._
 
-    def semigroupAssociativity[A : Semigroup : Equal](x: A, y: A, z: A) =
+    def semigroupAssociativity[A : Semigroup : Equal]
+        (x: A, y: A, z: A): Boolean =
       ((x |+| y) |+| z) === (x |+| (y |+| z))
 
   }
