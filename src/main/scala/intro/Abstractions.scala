@@ -48,7 +48,7 @@ object PointC {
 final case class Point(x: Int, y: Int)
 
 
-object AbstractionExample extends App {
+object Abstractions extends App {
 
   val pi: PointI = PointI(1,2)
   val padt: PointADT = PointADT(1,2)
