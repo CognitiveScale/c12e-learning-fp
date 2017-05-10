@@ -64,15 +64,37 @@ object Functions extends App {
   println(addCurryOne(100))
 
   def curry[A, B, C](f: (A, B) => C): A => B => C =
-    ???
+    a => b => f(a, b)
 
   def curryHof[A, B, C]: ((A, B) => C) => (A => B => C) =
-    ???
+    f => a => b => f(a, b)
 
   def uncurry[A, B, C](f: A => B => C): (A, B) => C =
-    ???
+    (a, b) => f(a)(b)
 
   def flip[A, B, C](f: A => B => C): B => A => C =
-    ???
+    b => a => f(a)(b)
+
+  def compose[A, B, C](f: B => C)(g: A => B): A => C =
+    a => f(g(a))
+
+  def compose2[A, B, C](f: B => C)(g: A => B)(a: A): C =
+    f(g(a))
+
+  def compose3[A, B, C]: (B => C) => (A => B) => (A => C) =
+    f => g => a => f(g(a))
+
+  def andThen[A, B, C](f: A => B)(g: B => C): A => C =
+    x => g(f(x))
+
+  def andThen2[A, B, C](f: A => B)(g: B => C)(a: A): C =
+    g(f(a))
+
+  def andThen3[A, B, C](f: A => B)(g: B => C)(a: A): C = {
+    flip(compose2[A, B, C])(f)(g)(a)
+  }
+
+  def andThen4[A, B, C]: (A => B) => (B => C) => (A => C) =
+    flip(compose2)
 
 }
