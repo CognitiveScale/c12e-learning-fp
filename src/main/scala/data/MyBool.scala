@@ -3,6 +3,7 @@ package data
 
 
 /** data MyBool = MyTrue | MyFalse */
+
 sealed trait MyBool {
 
   import MyBool.{ myTrue, myFalse }
@@ -16,9 +17,9 @@ sealed trait MyBool {
 
   def not: MyBool = fold(myFalse, myTrue)
 
-  def and(that: MyBool): MyBool = ???
+  def and(that: MyBool): MyBool = fold(that, myFalse)
 
-  def or(that: MyBool): MyBool = ???
+  def or(that: MyBool): MyBool = fold(myTrue, that)
 
 }
 
@@ -32,12 +33,17 @@ object MyBool {
 
   val myFalse: MyBool = MyFalse()
 
-  def fold[A](x: MyBool, ifTrue: => A, ifFalse: => A): A = ???
+  def fold[A](x: MyBool, ifTrue: => A, ifFalse: => A): A =
+    x match {
+      case MyTrue() => ifTrue
+      case MyFalse() => ifFalse
+    }
 
-  def not(x: MyBool): MyBool = ???
 
-  def and(x: MyBool, y: MyBool): MyBool = ???
+  def not(x: MyBool): MyBool = fold(x, myFalse, myTrue)
 
-  def or(x: MyBool, y: MyBool): MyBool = ???
+  def and(x: MyBool, y: MyBool): MyBool = fold(x, y, myFalse)
+
+  def or(x: MyBool, y: MyBool): MyBool = fold(x, myTrue, y)
 
 }
