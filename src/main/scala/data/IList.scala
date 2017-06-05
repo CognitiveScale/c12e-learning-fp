@@ -14,6 +14,14 @@ sealed trait IList[A] {
       case Cons(h, t) => ifCons(h, t.fold(ifNil)(ifCons))
     }
 
+  def foldLeft[B](initAcc: B)(f: (B, A) => B): B = ???
+
+  def map[B](f: A => B): IList[B] = ???
+
+  def flatMap[B](f: A => IList[B]): IList[B] = ???
+
+  def reverse: IList[A] = ???
+
 }
 
 final case class Nil[A]() extends IList[A]
