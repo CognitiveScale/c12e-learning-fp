@@ -20,7 +20,6 @@ object Applicative {
   }
 
   class Ops2[F[_], A](val fa: F[A]) extends AnyVal {
-    @SuppressWarnings(Array("org.wartremover.warts.ImplicitParameter"))
     def <*>[B](f: F[A => B])(implicit ev: Applicative[F]): F[B] = ev.ap(fa)(f)
   }
 

@@ -49,7 +49,7 @@ object Functions extends App {
 
   val addCurry: Int => Int => Int =
      { a => { b => a + b } }
-     // { a => b => a + b }
+     // a => b => a + b  // braces are optional
 
   println(addCurry(1)(2))
 
@@ -95,6 +95,6 @@ object Functions extends App {
   }
 
   def andThen4[A, B, C]: (A => B) => (B => C) => (A => C) =
-    flip(compose2)
+   flip(compose2)
 
 }

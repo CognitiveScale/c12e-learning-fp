@@ -8,6 +8,7 @@ import Nat.{ zero, succ }
 /** data Nat = Zero | Succ Nat */
 sealed trait Nat {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def fold[B](ifZero: B)(ifSucc: B => B): B = {
     this match {
       case Zero() => ifZero
@@ -15,9 +16,9 @@ sealed trait Nat {
     }
   }
 
-  def +(n: Nat): Nat = ???
+  // def +(n: Nat): Nat = ???
 
-  def *(n: Nat): Nat = ???
+  // def *(n: Nat): Nat = ???
 
 }
 
@@ -32,7 +33,7 @@ object Nat{
 
   def toInt(n: Nat): Int = n.fold(0) { _ + 1 }
 
-  def fromInt(i: Int): Nat = ???
+  // def fromInt(i: Int): Nat = ???
 
 }
 

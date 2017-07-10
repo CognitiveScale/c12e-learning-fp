@@ -9,10 +9,11 @@ trait Functor[F[_]] {
 
 object Functor {
 
+  def doesItCompile: Functor[Map[String, ?]] = ???
+
   @inline def apply[F[_]](implicit ev: Functor[F]): Functor[F] = ev
 
   class Ops[F[_], A](val fa: F[A]) extends AnyVal {
-    @SuppressWarnings(Array("org.wartremover.warts.ImplicitParameter"))
     def map[B](f: A => B)(implicit ev: Functor[F]): F[B] =
       ev.map(fa)(f)
   }

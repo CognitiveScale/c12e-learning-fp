@@ -9,6 +9,9 @@ import org.scalacheck._
 import com.c12e.learn.typeclass.Equal
 
 
+case class Blowup(i: Int)
+
+
 abstract class Spec(initContext: String)
     extends Properties(initContext)
     with ArbitraryInstances {
@@ -122,6 +125,6 @@ abstract class Spec(initContext: String)
 
   implicit def unitToProp(u: => Unit): Prop = booleanToProp({u; true})
 
-  implicit def unitToProp2(u: Unit): Prop = booleanToProp(true)
+  // implicit def unitToProp2(u: Unit): Prop = booleanToProp(true)
 
 }

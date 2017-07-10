@@ -2,9 +2,6 @@ package com.c12e.learn
 package typeclass
 
 
-import com.c12e.learn.syntax.stdlib.boolean._
-
-
 trait Equal[A] { self =>
 
   def equal(a1: A, a2: A): Boolean
@@ -28,8 +25,9 @@ object Equal {
     }
 
   implicit val boolean: Equal[Boolean] = fromObject[Boolean]
+  implicit val int: Equal[Int] = fromObject[Int]
+  implicit val string: Equal[String] = fromObject[String]
 
-  @SuppressWarnings(Array("org.wartremover.warts.ImplicitParameter"))
   class Ops[A](val a: A) extends AnyVal {
 
     def ===(b: A)(implicit ev: Equal[A]): Boolean = ev.equal(a, b)
@@ -48,8 +46,12 @@ object Equal {
   trait Laws {
 
     import Syntax._
+    import syntax.stdlib.boolean._
 
     def equalReflexivity[A : Equal](a: A): Boolean =
+      // implicitly[Equal[A]].equal(a, a)
+      // Equal.apply[A].equal(a, a)
+      // Equal[A].equal(a, a)
       a === a
 
     def equalSymmetry[A : Equal](a: A, b: A): Boolean =

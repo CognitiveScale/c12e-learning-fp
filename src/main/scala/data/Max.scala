@@ -5,7 +5,7 @@ package data
 import com.c12e.learn.typeclass.Equal
 
 
-final case class Max[A](a: A) extends AnyVal
+final case class Max[A](a: A)
 
 object Max {
 
