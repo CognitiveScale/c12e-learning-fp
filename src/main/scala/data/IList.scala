@@ -18,20 +18,22 @@ sealed trait IList[A] {
       case Cons(h, t) => ifCons(h, t.fold(ifNil)(ifCons))
     }
 
-  def ++(l: IList[A]): IList[A] = fold(l)(cons)
+  def foldLeft1[B](initAcc: B)(ifCons: (B, A) => B): B = 
+    this match {
+      case Nil() => initAcc
+      case Cons(h, t) => t.foldLeft1(ifCons(initAcc, h))(ifCons)
+    }
 
-  def map[B](f: A => B): IList[B] =
-    // this match {
-    //   case Nil() => nil[B]
-    //   case Cons(h, t) => Cons(f(h), t.map(f))
-    // }
-    fold(nil[B]) { (a, b) => cons(f(a), b) }
+  //def foldLeft2[B](initAcc: B)(ifCons: (B, A) => B): B = {
+    //val initAcc = 
+    //fold(initAcc)(ifCons)
+  //}
 
-  def flatMap[B](f: A => IList[B]): IList[B] =
-    fold(nil[B]) { (a, b) => f(a) ++ b }
+  def map[B](f: A => B): IList[B] = fold(nil[B])((a, b) => cons(f(a), b))
 
-  def flatten[B](implicit ev: A =:= IList[B]): IList[B] =
-    flatMap(ev)
+  def reverse: IList[A] = foldLeft1(nil[A])((b, a) => cons(a, b))
+
+  def flatMap[B](f: A => IList[B]): IList[B] = IList.join(map(f))
 
   def foldLeft[B](initAcc: B)(f: (B, A) => B): B =
     fold[B => B](identity){ (a, acc) => b => acc(f(b, a)) }(initAcc)
@@ -48,11 +50,19 @@ object IList {
   def nil[A]: IList[A] = Nil[A]()
   def cons[A](head: A, tail: IList[A]): IList[A] = Cons[A](head, tail)
 
-  implicit def semigroup[A]: Semigroup[IList[A]] =
-    new Semigroup[IList[A]] {
-      def append(x: IList[A], y: IList[A]) = x ++ y
+  def join[A](lst: IList[IList[A]]): IList[A] = {
+    lst match {
+      case Nil() => nil
+      case Cons(hs, ts) => cat(hs, join(ts))
     }
+  }
 
+  def cat[A](l1: IList[A], l2: IList[A]): IList[A] = {
+    l1 match {
+      case Nil() => l2
+      case Cons(h, t) => cons(h, cat(t, l2))
+    }
+  }
 }
 
 
@@ -62,6 +72,17 @@ object IListTest extends App {
   val testList: IList[Int] = cons(1, cons(2, cons(3, nil)))
   println(testList)
   println(testList.fold(0) {_ + _ })
+  println(testList.map(2 + _))
+  println("foldLeft: ")
+  println(testList.foldLeft1(nil[Int])((b, a) => cons(a, b)))
+  println(testList.foldLeft1(0)(_ + _))
+  print("reverse: ")
   println(testList.reverse)
-  println(mkList(mkList(1,2,3), mkList(4,5,6), mkList(7,8,9)).flatten[Int])
+  print("cat: ")
+  println(IList.cat(testList, cons(4, cons(5, nil))))
+  print("join: ")
+  println(IList.join(cons(testList, cons(testList, nil))))
+//  println(testList.foldLeft2(nil[Int])((b, a) => cons(a, b)))
+  print("flatMap: ")
+  println(testList.flatMap(x => cons(x-1, cons(x+1, nil))))
 }
