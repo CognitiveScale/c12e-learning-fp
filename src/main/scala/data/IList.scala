@@ -27,6 +27,7 @@ sealed trait IList[A] {
     //val initAcc = 
     //fold(initAcc)(ifCons)
   //}
+  //
   def map[B](f: A => B): IList[B] = fold(nil[B])((a, b) => cons(f(a), b))
 
   def reverse: IList[A] = foldLeft1(nil[A])((b, a) => cons(a, b))
