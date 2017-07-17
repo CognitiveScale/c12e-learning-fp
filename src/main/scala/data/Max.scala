@@ -6,6 +6,7 @@ import scala.math.max
 
 import com.c12e.learn.typeclass.{Equal, Semigroup}
 
+
 final case class Max[A](value: A) extends AnyVal
 
 object Max {

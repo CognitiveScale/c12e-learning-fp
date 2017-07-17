@@ -10,7 +10,6 @@ trait Equal[A] { self =>
     new Equal[B] {
       def equal(b1: B, b2: B): Boolean = self.equal(f(b1), f(b2))
     }
-
 }
 
 
