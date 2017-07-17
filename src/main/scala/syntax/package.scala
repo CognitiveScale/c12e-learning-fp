@@ -2,7 +2,7 @@ package com.c12e.learn
 
 
 package object syntax {
-  object all extends stdlib.AllStdlibSyntax
+  object all extends stdlib.AllStdlibSyntax with syntax.AllTypeclassSyntax
   object typeclass {
     object all extends syntax.AllTypeclassSyntax
     object applicative extends com.c12e.learn.typeclass.Applicative.Syntax

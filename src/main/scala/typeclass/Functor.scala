@@ -2,6 +2,8 @@ package com.c12e.learn
 package typeclass
 
 
+// F[_] is s 'type constructor'
+// F[A] is a type variable?
 trait Functor[F[_]] {
   def map[A, B](fa: F[A])(f: A => B): F[B]
 }
