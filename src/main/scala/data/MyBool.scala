@@ -1,7 +1,6 @@
 package com.c12e.learn
 package data
 
-
 /** data MyBool = MyTrue | MyFalse */
 
 sealed trait MyBool {
@@ -18,13 +17,11 @@ sealed trait MyBool {
   def not: MyBool = fold(myFalse, myTrue)
 
   def and(that: MyBool): MyBool = fold(that, myFalse)
-
   def or(that: MyBool): MyBool = fold(myTrue, that)
-
 }
 
-final case class MyTrue() extends MyBool
-final case class MyFalse() extends MyBool
+private final case class MyTrue() extends MyBool
+private final case class MyFalse() extends MyBool
 
 
 object MyBool {
@@ -33,12 +30,11 @@ object MyBool {
 
   val myFalse: MyBool = MyFalse()
 
-  def fold[A](x: MyBool, ifTrue: => A, ifFalse: => A): A =
+  def fold[A](x: MyBool, ifTrue: => A, ifFalse: => A): A = 
     x match {
       case MyTrue() => ifTrue
       case MyFalse() => ifFalse
     }
-
 
   def not(x: MyBool): MyBool = fold(x, myFalse, myTrue)
 
@@ -46,4 +42,21 @@ object MyBool {
 
   def or(x: MyBool, y: MyBool): MyBool = fold(x, myTrue, y)
 
+}
+
+object MyBoolRun extends App {
+  import MyBool.{myTrue, myFalse}
+//  import org.scalatest.Assertions._
+  val t: MyBool = myTrue
+  val f: MyBool = myFalse
+ // assert(t.and(t) === t)
+  println(t.and(t))
+  println(t.and(f))
+  println(f.and(t))
+  println(f.and(f))
+
+  println(t.or(t))
+  println(t.or(f))
+  println(f.or(t))
+  println(f.or(f))
 }
