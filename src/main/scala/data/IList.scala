@@ -37,7 +37,6 @@ sealed trait IList[A] {
     fold[B => B](identity){ (a, acc) => b => acc(f(b, a)) }(initAcc)
 
   def reverse: IList[A] = foldLeft(nil[A]) { (t, h) => cons(h, t) }
-
 }
 
 final case class Nil[A]() extends IList[A]

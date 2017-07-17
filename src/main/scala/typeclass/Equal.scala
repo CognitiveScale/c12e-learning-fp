@@ -27,6 +27,7 @@ object Equal {
   implicit val int: Equal[Int] = fromObject[Int]
   implicit val string: Equal[String] = fromObject[String]
 
+
   class Ops[A](val a: A) extends AnyVal {
 
     def ===(b: A)(implicit ev: Equal[A]): Boolean = ev.equal(a, b)
