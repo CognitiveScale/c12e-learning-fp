@@ -23,12 +23,10 @@ sealed trait IList[A] {
       case Nil() => initAcc
       case Cons(h, t) => t.foldLeft1(ifCons(initAcc, h))(ifCons)
     }
-
   //def foldLeft2[B](initAcc: B)(ifCons: (B, A) => B): B = {
     //val initAcc = 
     //fold(initAcc)(ifCons)
   //}
-
   def map[B](f: A => B): IList[B] = fold(nil[B])((a, b) => cons(f(a), b))
 
   def reverse: IList[A] = foldLeft1(nil[A])((b, a) => cons(a, b))
