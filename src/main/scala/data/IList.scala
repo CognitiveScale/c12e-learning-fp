@@ -35,9 +35,6 @@ sealed trait IList[A] {
 
   def flatMap[B](f: A => IList[B]): IList[B] = IList.join(map(f))
 
-  def foldLeft[B](initAcc: B)(f: (B, A) => B): B =
-    fold[B => B](identity){ (a, acc) => b => acc(f(b, a)) }(initAcc)
-
   def reverse: IList[A] = foldLeft(nil[A]) { (t, h) => cons(h, t) }
 }
 
