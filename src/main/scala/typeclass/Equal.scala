@@ -25,6 +25,7 @@ object Equal {
 
   implicit val boolean: Equal[Boolean] = fromObject[Boolean]
   implicit val int: Equal[Int] = fromObject[Int]
+  implicit val string: Equal[String] = fromObject[String]
 
   class Ops[A](val a: A) extends AnyVal {
 

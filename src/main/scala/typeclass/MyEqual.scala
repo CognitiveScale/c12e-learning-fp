@@ -11,10 +11,12 @@ trait MyEqual[T] {
 object MyEqual {
   def equal[T](a: T, b: T)(implicit ev: MyEqual[T]): Boolean = ev.equal(a, b)
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit object MyEqualInt extends MyEqual[Int] {
     def equal(a: Int, b: Int): Boolean = a.equals(b)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit object MyEqualString extends MyEqual[String] {
     def equal(a: String, b: String): Boolean = a.equals(b)
   }

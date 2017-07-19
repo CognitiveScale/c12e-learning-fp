@@ -3,6 +3,7 @@ package data
 
 sealed trait BCT[A] {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def fold[B](ifNada: B, ifNodo: (A, B, B) => B): B = {
     this match {
       case Nada()         => ifNada

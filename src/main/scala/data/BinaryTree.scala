@@ -3,22 +3,23 @@ package data
 
 sealed trait BinaryTree[A] {
 
-  def fold[B](ifNone: B, ifLeaf: A => B, ifNode: (B, B) => B): B = {
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  def fold[B](ifTerminal: B, ifLeaf: A => B, ifNode: (B, B) => B): B = {
     this match {
-      case None()     => ifNone
+      case Terminal()     => ifTerminal
       case Leaf(v)    => ifLeaf(v)
-      case Node(l, r) => ifNode(l.fold(ifNone, ifLeaf, ifNode), 
-                                r.fold(ifNone, ifLeaf, ifNode))
+      case Node(l, r) => ifNode(l.fold(ifTerminal, ifLeaf, ifNode), 
+                                r.fold(ifTerminal, ifLeaf, ifNode))
     }
   }
 }
 
-final case class None[A]() extends BinaryTree[A]
+final case class Terminal[A]() extends BinaryTree[A]
 final case class Leaf[A](v: A) extends BinaryTree[A]
 final case class Node[A](l: BinaryTree[A], r: BinaryTree[A]) extends BinaryTree[A]
 
 object BinaryTree {
-  def none[A](): BinaryTree[A] = None()
+  def terminal[A](): BinaryTree[A] = Terminal()
 
   def leaf[A](v: A): BinaryTree[A] = Leaf(v)
 
@@ -27,9 +28,9 @@ object BinaryTree {
 
 
 object RunBinaryTree extends App {
-  import BinaryTree.{none, leaf, node}
+  import BinaryTree.{terminal, leaf, node}
 
-  val t: BinaryTree[Int] = node(node(none(), leaf(2)), node(leaf(3), leaf(4)))
+  val t: BinaryTree[Int] = node(node(terminal(), leaf(2)), node(leaf(3), leaf(4)))
   println(t)
   val s: Int = t.fold(0, identity, (x:Int, y:Int) => x + y)
   println("sum: " + s.toString())
