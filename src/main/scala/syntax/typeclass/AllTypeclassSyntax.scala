@@ -1,5 +1,6 @@
 package com.c12e.learn
 package syntax
+package typeclass
 
 
 trait AllTypeclassSyntax

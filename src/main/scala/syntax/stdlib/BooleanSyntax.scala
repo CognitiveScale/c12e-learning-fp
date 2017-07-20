@@ -7,9 +7,8 @@ class BooleanOps(val a: Boolean) extends AnyVal {
   def implies(b: Boolean): Boolean = !a || b
 }
 
+
 trait BooleanSyntax {
   @SuppressWarnings(Array("org.wartremover.warts.ImplicitConversion"))
   implicit def toBooleanOps(a: Boolean): BooleanOps = new BooleanOps(a)
 }
-
-object BooleanSyntax extends BooleanSyntax
