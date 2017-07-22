@@ -20,6 +20,8 @@ object Plus {
   }
 
   trait Syntax {
+    // TODO: how can we avoid these warts? 
+    // can we rewrite the function so that these warts don't happen?
     @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes",
                             "org.wartremover.warts.ImplicitConversion",
                             "org.wartremover.warts.PublicInference"))
