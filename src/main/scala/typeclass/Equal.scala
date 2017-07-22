@@ -29,6 +29,7 @@ object Equal {
 
   implicit val boolean: Equal[Boolean] = fromObject[Boolean]
 
+
   @SuppressWarnings(Array("org.wartremover.warts.ImplicitParameter"))
   class Ops[A](val a: A) extends AnyVal {
 

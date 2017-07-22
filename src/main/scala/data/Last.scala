@@ -13,7 +13,7 @@ object Last {
 
   implicit def semigroupLastInt: Semigroup[Last[Int]] = {
     new Semigroup[Last[Int]] {
-      def append(x: Last[Int], y: Last[Int]) = y
+      def append(x: Last[Int], y: Last[Int]): Last[Int] = y
     }
   }
 }
