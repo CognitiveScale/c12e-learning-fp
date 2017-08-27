@@ -28,5 +28,3 @@ object Maybe {
   def just[A](a: A): Maybe[A] = Just(a)
   def empty[A]: Maybe[A] = Empty()
 }
-
-// TODO: implement Plus (from scalaz) and PlusOps
