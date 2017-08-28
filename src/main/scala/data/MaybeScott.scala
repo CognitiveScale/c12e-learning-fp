@@ -16,10 +16,10 @@ sealed trait MaybeScott[A] {
     imatch(ifEmpty, value => ifJust(value))
 
   def map[B](f: A => B): MaybeScott[B] =
-    fold(empty(), f andThen just)
+    fold(empty, f andThen just)
 
   def flatMap[B](f: A => MaybeScott[B]): MaybeScott[B] =
-    fold(empty(), f)
+    fold(empty, f)
 
   @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   override def toString: String = fold[String]("empty", v => "Just " + v.toString)
@@ -34,7 +34,7 @@ object MaybeScott {
       override def imatch[B](b: B, f: A => B): B = f(v)
     }
 
-  def empty[A](): MaybeScott[A] = new MaybeScott[A] {
+  def empty[A]: MaybeScott[A] = new MaybeScott[A] {
     override def imatch[B](b: B, f: (A) => B): B = b
   }
 
@@ -45,7 +45,7 @@ object MaybeScottTest extends App {
   import MaybeScott.{empty, just}
 
   val x: MaybeScott[Int] = just(1)
-  val y: MaybeScott[Int] = empty()
+  val y: MaybeScott[Int] = empty
 
   println(x)
   println(x.flatMap(x => just(x + 1)))

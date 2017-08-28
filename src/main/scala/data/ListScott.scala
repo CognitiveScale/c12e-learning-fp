@@ -20,10 +20,10 @@ sealed trait ListScott[A] {
   def ++(l: ListScott[A]): ListScott[A] = fold(l, cons)
 
   def map[B](f: A => B): ListScott[B] =
-    fold(nil[B](), (h, t: ListScott[B]) => cons(f(h), t))
+    fold(nil[B], (h, t: ListScott[B]) => cons(f(h), t))
 
   def flatMap[B](f: A => ListScott[B]): ListScott[B] =
-    fold(nil[B](), (h, t: ListScott[B]) => f(h) ++ t)
+    fold(nil[B], (h, t: ListScott[B]) => f(h) ++ t)
 
   @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   override def toString: String = fold[String]("", (h, t) => h.toString + " " + t)
@@ -33,7 +33,7 @@ sealed trait ListScott[A] {
 object ListScott {
 
 
-  def nil[A](): ListScott[A] =
+  def nil[A]: ListScott[A] =
     new ListScott[A] {
       override def imatch[B](b: B)(f: (A, ListScott[A]) => B): B = b
     }
@@ -51,13 +51,13 @@ object ListScottTest extends App {
 
   import ListScott.{nil, cons}
 
-  val emptyList: ListScott[Int] = nil()
-  val list: ListScott[Int] = cons(1, cons(2, cons(3, nil())))
+  val emptyList: ListScott[Int] = nil
+  val list: ListScott[Int] = cons(1, cons(2, cons(3, nil)))
 
   val sum: Int = list.fold(0, (x: Int, y: Int) => x + y)
 
 
   println(list)
-  println(list.flatMap(a => cons(a + 1, nil())))
+  println(list.flatMap(a => cons(a + 1, nil)))
   println(sum)
 }
