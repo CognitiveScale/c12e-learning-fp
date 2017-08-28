@@ -58,7 +58,9 @@ object TestScottMaybe extends App {
 
   assert(just("hello").map(st => st.toUpperCase()) === just("HELLO"))
 
-  assert(just("Scala is ok.").filter(st => st =/= " ") === just("Scalaisok."))
+  def hasSpace: String => Boolean = _.indexOf(' ') =/= -1
+  assert(just("Scala is ok.").filter(hasSpace).isJust)
+  assert(just("Look,nospaces!").filter(hasSpace).isNothing)
 
   assert(nothing[Int].map(_ * 2) === nothing)
 
