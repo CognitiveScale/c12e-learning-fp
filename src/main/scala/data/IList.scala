@@ -2,7 +2,8 @@ package com.c12e.learn
 package data
 
 
-import com.c12e.learn.typeclass.Semigroup
+import com.c12e.learn.typeclass.{ Equal, Semigroup }
+import com.c12e.learn.syntax.typeclass.equal._
 
 import IList.{ nil, cons }
 
@@ -17,6 +18,9 @@ sealed trait IList[A] {
       case Nil() => ifNil
       case Cons(h, t) => ifCons(h, t.fold(ifNil)(ifCons))
     }
+
+  def isEmpty: Boolean =
+    fold(true) { (_, _) => false }
 
   def ++(l: IList[A]): IList[A] = fold(l)(cons)
 
@@ -52,6 +56,20 @@ object IList {
   implicit def semigroup[A]: Semigroup[IList[A]] =
     new Semigroup[IList[A]] {
       def append(x: IList[A], y: IList[A]) = x ++ y
+    }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  implicit def equal[A : Equal]: Equal[IList[A]] =
+    new Equal[IList[A]] {
+      def equal(as: IList[A], bs: IList[A]) =
+        as match {
+          case Nil() => bs.isEmpty
+          case Cons(ah, at) =>
+            bs match {
+              case Nil() => bs.isEmpty
+              case Cons(bh, bt) => (ah === bh) && (at === bt)
+            }
+        }
     }
 
 }
