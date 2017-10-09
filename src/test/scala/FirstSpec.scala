@@ -6,5 +6,5 @@ import com.c12e.learn.data.First
 
 
 object FirstSpec extends Spec("First") {
-  checkAll("semigroup", Props.semigroup[First[String]])
+  checkAll("semigroup", Props.semigroup[First[Boolean]])
 }
