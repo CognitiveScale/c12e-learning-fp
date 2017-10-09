@@ -32,6 +32,9 @@ trait ArbitraryInstances {
   implicit def maxArbitrary[A : Arbitrary]: Arbitrary[Max[A]] =
     arb[A] map Max.apply
 
+  implicit def firstArbitrary[A : Arbitrary]: Arbitrary[First[A]] =
+    arb[A] map First.apply
+
   implicit def arbitraryList[A: Arbitrary]: Arbitrary[IList[A]] =
     arb[List[A]] map { _.foldRight(IList.nil[A])(IList.cons) }
 
