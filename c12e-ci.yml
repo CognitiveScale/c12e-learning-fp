@@ -1,0 +1,6 @@
+version: "3.4"
+
+services:
+    builder:
+        image: c12e/oracle-jdk:8u73b02
+        command: "./sbt -no-colors '; clean ; test ; publish'"
