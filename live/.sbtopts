@@ -1,2 +1,0 @@
--Dsbt.boot.credentials=$HOME/.sbt/credentials
--Dsbt.override.build.repos=true
