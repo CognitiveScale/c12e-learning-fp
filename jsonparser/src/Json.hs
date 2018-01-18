@@ -7,29 +7,32 @@ data Parser a = Parser (String -> Maybe (a, String))
 run :: Parser a -> String -> Maybe (a, String)
 run (Parser f) = f
 
+-- Lifts --------------------------------------------------
+
 lift0 :: a -> Parser a
-lift0 a = Parser (\s -> Just(a, s))
+lift0 a = Parser helper where
+    helper input = Just (a, input)
 
 lift1 :: (a -> b) -> Parser a -> Parser b
-lift1 f p = Parser helper where
-  helper input = 
-    case (run p) input of -- :: Maybe (a, String)
-      Nothing -> Nothing
-      Just (x, rest) -> Just(f x, rest)
+lift1 f pa = Parser helper where
+    -- helper :: String -> Maybe (b, String)
+    helper input =
+    -- (run pa) :: String -> Maybe (a, String)
+    -- (run pa) input :: Maybe (a, String)
+        case (run pa) input of
+            Nothing -> Nothing
+            Just (a, rest) -> Just (f a, rest)
 
-lift2 :: (a -> b -> c) -> Parser a -> Parser b -> Parser c
+-- lift1 = \f -> \a -> Parser helper
+-- lift1 f = \a -> Parser helper
+
+lift2 :: (a -> b -> c) -> (Parser a -> Parser b -> Parser c)
 lift2 = undefined
+-- Parser a is parser of bool (reading + or -) parseSign
+-- Parser b is number
+-- Parser c is
 
-stringToInt :: String -> Int
-stringToInt = read
-
-number :: Parser Int
-number = lift1 stringToInt $ some digit
-
-anychar :: Parser Char
-anychar = Parser helper where
-  helper []     = Nothing
-  helper (c:cs) = Just (c, cs)
+-- Utility Functions --------------------------------------
 
 checkChar :: (Char -> Bool) -> Parser Char
 checkChar f = Parser helper where
@@ -39,18 +42,10 @@ checkChar f = Parser helper where
     then Just (h, hs) 
     else Nothing
 
-{-digit :: Parser Int-}
-{-digit = Parser helper where-}
-  {-helper []   = Nothing-}
-  {-helper (c:cs) = -}
-    {-if isDigit c -}
-    {-then Just((digitToInt c, cs)) -}
-    {-else Nothing-}
-digit :: Parser Char
-digit = checkChar isDigit
+stringToInt :: String -> Int
+stringToInt = read
 
 some :: Parser x -> Parser [x]
--- one or more times
 some p = Parser helper where
   helper input = -- helper :: String -> Maybe(x, String)
     case run p input of -- :: Maybe(x, String)
@@ -60,7 +55,37 @@ some p = Parser helper where
           Nothing -> Just ([x], rest)
           Just (xs, rrest) -> Just (x : xs, rrest)
 
--- Values --
+-- Parsers ------------------------------------------------
+
+number :: Parser Int
+number = lift1 stringToInt (some digit)
+{-
+number =
+    let digits = some digit -- digits :: Parser String
+        f = stringToInt -- f :: String -> Int
+    in lift1 f digits
+-}
+
+signedNumber :: Parser Int
+signedNumber = lift2 helper parseSign number where
+    helper :: Bool -> Int -> Int
+    helper = undefined
+    parseSign :: Parser Bool
+    parseSign = undefined
+
+-- sample input --
+-- run signedNumber "+123abc" == Just (123, "abc")
+-- run signedNumber "-123abc" == Just (-123, "abc")
+-- run signedNumber "123" == Nothing
+
+anychar :: Parser Char
+anychar = Parser helper where
+  helper []     = Nothing
+  helper (c:cs) = Just (c, cs)
+
+digit :: Parser Char
+digit = checkChar isDigit
+
 
 true :: Parser Bool
 true = Parser helper where
