@@ -1,6 +1,6 @@
 module Json where
 
-import Data.Char (isDigit, digitToInt)
+import Data.Char (isDigit)
 
 data Parser a = Parser (String -> Maybe (a, String))
 
@@ -26,11 +26,47 @@ lift1 f pa = Parser helper where
 -- lift1 = \f -> \a -> Parser helper
 -- lift1 f = \a -> Parser helper
 
+--lift2 :: (a -> b -> c) -> (Parser a -> (Parser b -> (Parser c)))
 lift2 :: (a -> b -> c) -> (Parser a -> Parser b -> Parser c)
-lift2 = undefined
+lift2 f = apply where
+     -- apply :: Parser a -> Parser b -> Parser c
+     apply pa pb = Parser helper where
+       helper input =
+           case (run pa) input of
+               Nothing -> Nothing
+               Just (a, r1) -> case (run pb) r1 of
+                   Nothing -> Nothing
+                   Just (b, r2) -> Just (f a b, r2)
+
 -- Parser a is parser of bool (reading + or -) parseSign
 -- Parser b is number
 -- Parser c is
+
+-- pa `orElse` pb === orElse pa pb
+orElse :: Parser a -> Parser a -> Parser a
+orElse pa pb = Parser helper where
+  helper input =
+    case run pa input of
+      Nothing -> run pb input
+      result -> result
+
+(<|>) :: Parser a -> Parser a -> Parser a
+(<|>) = orElse
+
+-- pa <|> pb <|> pc
+-- orElse (orElse pa pb) pc
+-- pa `orElse` pb `orElse` pc
+
+-- Left identity:
+-- failure <|> pa === pa
+-- Right identity:
+-- pa <|> failure === pa
+-- Associativity:
+-- (pa <|> pb) <|> pc === pa <|> (pb <|> pc)
+
+--failure :: Parser a
+failure = Parser helper where
+   helper input = Nothing
 
 -- Utility Functions --------------------------------------
 
@@ -69,9 +105,13 @@ number =
 signedNumber :: Parser Int
 signedNumber = lift2 helper parseSign number where
     helper :: Bool -> Int -> Int
-    helper = undefined
+    helper True n = n
+    helper False n = -n
     parseSign :: Parser Bool
-    parseSign = undefined
+    parseSign = Parser signHelper where
+      signHelper ('+' : rest) = Just(True, rest)
+      signHelper ('-' : rest) = Just(False, rest)
+      signHelper _ = Nothing
 
 -- sample input --
 -- run signedNumber "+123abc" == Just (123, "abc")
@@ -102,3 +142,11 @@ nullj = Parser helper where
   helper ('n':'u':'l':'l': rest) = Just((), rest)
   helper _ = Nothing
 
+-- homework
+
+-- Take a list of parsers and produce a parser whose result is that of the first
+-- parser in the list to succeed (or failure)
+sump :: [Parser a] -> Parser a
+sump = undefined
+
+-- Fill in test cases
