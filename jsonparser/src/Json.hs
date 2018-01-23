@@ -1,3 +1,5 @@
+{-# LANGUAGE ApplicativeDo #-}
+
 module Json where
 
 import Data.Char (isDigit)
@@ -41,6 +43,13 @@ lift2 f = apply where
 -- Parser a is parser of bool (reading + or -) parseSign
 -- Parser b is number
 -- Parser c is
+-- alternative implementation...
+{-lift2 :: (a -> b -> c) -> (Parser a -> Parser b -> Parser c)-}
+{-lift2 f pa pb = Parser helper where-}
+  {-helper str = do-}
+    {-(b, rest) <- run pa str-}
+    {-(c, rest2) <- run pb rest-}
+    {-return (f b c, rest2)-}
 
 -- pa `orElse` pb === orElse pa pb
 orElse :: Parser a -> Parser a -> Parser a
@@ -92,6 +101,12 @@ some p = Parser helper where
           Just (xs, rrest) -> Just (x : xs, rrest)
 
 -- Parsers ------------------------------------------------
+
+parseSign :: Parser Bool
+parseSign = Parser helper where
+  helper ('+':rest) = Just(True, rest)
+  helper ('-':rest) = Just(False, rest)
+  helper _ = Nothing
 
 number :: Parser Int
 number = lift1 stringToInt (some digit)
