@@ -1,8 +1,0 @@
-*~
-
-.stack-work/
-
-# We'll explore Stack's hpack-based support; with this method, *.cabal
-# files are auto-generated, so they shouldn't be tracked.
-#
-*.cabal

@@ -60,8 +60,8 @@ lift2 f = apply where
                    Just (b, r2) -> Just (f a b, r2)
 
 
-some :: Parser x -> Parser [x]
-some p = Parser helper where
+oldSome :: Parser x -> Parser [x]
+oldSome p = Parser helper where
   helper input = -- helper :: String -> Maybe(x, String)
     case run p input of -- :: Maybe(x, String)
       Nothing -> Nothing
@@ -69,6 +69,14 @@ some p = Parser helper where
         case helper rest of
           Nothing -> Just ([x], rest)
           Just (xs, rrest) -> Just (x : xs, rrest)
+
+
+many :: Parser x -> Parser [x]
+many p = some p <|> lift0 []
+
+
+some :: Parser x -> Parser [x]
+some p = lift2 (:) p (many p)
 
 
 -- pa `orElse` pb === orElse pa pb
