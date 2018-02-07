@@ -1,0 +1,11 @@
+*~
+
+# Scala
+target/
+
+# Haskell
+.stack-work/
+*.cabal
+
+# We're using Stack's hpack support, so we do not track the
+# auto-generated .cabal files.
