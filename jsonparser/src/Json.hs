@@ -90,8 +90,8 @@ checkChar f = Parser helper where
 stringToInt :: String -> Int
 stringToInt = read
 
-some :: Parser x -> Parser [x]
-some p = Parser helper where
+someOld :: Parser x -> Parser [x]
+someOld p = Parser helper where
   helper input = -- helper :: String -> Maybe(x, String)
     case run p input of -- :: Maybe(x, String)
       Nothing -> Nothing
@@ -99,6 +99,14 @@ some p = Parser helper where
         case helper rest of
           Nothing -> Just ([x], rest)
           Just (xs, rrest) -> Just (x : xs, rrest)
+
+-- one or more
+some :: Parser x -> Parser [x]
+some p = lift2 (:) p (many p)
+
+-- zero or more
+many :: Parser x -> Parser [x]
+many p = some p <|> lift0 []
 
 -- Parsers ------------------------------------------------
 
@@ -162,6 +170,9 @@ nullj = Parser helper where
 -- Take a list of parsers and produce a parser whose result is that of the first
 -- parser in the list to succeed (or failure)
 sump :: [Parser a] -> Parser a
-sump = undefined
+sump [] = failure
+sump (p:ps) = orElse p (sump ps)
+{-sump ps = foldr (<|>) failure ps-}
 
--- Fill in test cases
+-- How do we support [Parser a, Parser b, Parcer c,...] ?
+
