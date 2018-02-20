@@ -1,6 +1,6 @@
 module Json where
 
-import Data.Char (isDigit)
+import Data.Char (isDigit, isSpace)
 
 
 data Parser a = Parser (String -> Maybe (a, String))
@@ -143,6 +143,27 @@ digit = checkChar isDigit
 number :: Parser Int
 number = lift1 stringToInt (some digit)
 
+void :: Parser a -> Parser ()
+void p = lift1 (\_ -> ()) p
+
+space :: Parser ()
+space =  void (checkChar isSpace)
+
+spaces :: Parser ()
+spaces = void (many space)
+
+andThen :: Parser a -> Parser b -> Parser b
+andThen = lift2 (\_ y -> y)
+
+before :: Parser a -> Parser b -> Parser a
+before = lift2 const
+
+token :: Parser a -> Parser a
+token p = spaces `andThen` p
+
+pseudoArray :: Parser [Int]
+pseudoArray = undefined
+-- read [ followed by 0 or more space-separated numbers followed by ]
 
 stringToInt :: String -> Int
 stringToInt = read

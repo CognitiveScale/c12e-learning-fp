@@ -1,4 +1,4 @@
-module Homework02 where
+module Solutions02 where
 
 import Json (Parser, lift0, lift1, lift2)
 
@@ -17,7 +17,9 @@ type.
 
 
 lift3 :: (a -> b -> c -> d) -> Parser a -> Parser b -> Parser c -> Parser d
-lift3 = undefined
+lift3 f pa pb pc = (lift2 apply) ((lift2 f) pa pb) pc where
+  apply :: (c -> d) -> c -> d
+  apply g c = g c
 
 -- Test cases
 
