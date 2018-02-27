@@ -172,3 +172,38 @@ spaces = void (many space)
 
 token :: Parser a -> Parser a
 token p = spaces `andThen` p
+
+------------------------------
+
+openArray :: Parser Char
+openArray = checkChar (== '[')
+--openArray = checkChar (\c -> c == '[')
+
+closeArray :: Parser Char
+closeArray = checkChar (== ']')
+
+numbers :: Parser [Int]
+numbers = many (token number)
+
+json :: Parser Json
+json = jsonNull <|> jsonBool
+
+jsonNull :: Parser Json
+jsonNull = token $ lift1 (\_ -> JsonNull) nullj
+
+jsonBool :: Parser Json
+jsonBool = token $ lift1 JsonBool (true <|> false)
+
+data Json 
+    = JsonInt Int 
+    | JsonBool Bool  
+    | JsonNull  
+    | JsonString String
+    | JsonArray [Json]
+    | JsonObject [(String, Json)]
+    deriving Show
+
+
+array :: Parser [Json]
+array = (token openArray) `andThen`  (many json)  `thenSkip` (token closeArray `andThen` spaces)
+
