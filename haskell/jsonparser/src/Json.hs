@@ -1,6 +1,6 @@
 module Json where
 
-import Data.Char (isDigit, isSpace)
+import Data.Char (isDigit, isSpace, isControl)
 
 
 data Parser a = Parser (String -> Maybe (a, String))
@@ -26,6 +26,10 @@ checkChar f = Parser helper where
     if f h
     then Just (h, hs)
     else Nothing
+
+
+match :: Char -> Parser ()
+match c = void (checkChar (==c))
 
 
 lift0 :: a -> Parser a
@@ -58,6 +62,11 @@ lift2 f = apply where
                Just (a, r1) -> case (run pb) r1 of
                    Nothing -> Nothing
                    Just (b, r2) -> Just (f a b, r2)
+
+
+lift3 :: (a -> b -> c -> d) -> Parser a -> Parser b -> Parser c -> Parser d
+lift3 f pa pb pc =
+    lift2 ($) (lift2 f pa pb) pc
 
 
 oldSome :: Parser x -> Parser [x]
@@ -173,6 +182,25 @@ spaces = void (many space)
 token :: Parser a -> Parser a
 token p = spaces `andThen` p
 
+
+-- Parse a character that occurs inside a JSON string, including
+-- proper treatment of escape characters.
+--
+char :: Parser Char
+char = Parser go
+    where
+    go []               = Nothing
+    go ('\\':'\\':rest) = Just ('\\', rest)
+    go ('\\':'"':rest)  = Just ('"', rest)
+    go ('\\':'n':rest)  = Just ('\n', rest)
+    go ('\\':'r':rest)  = Just ('\r', rest)
+    go ('\\':'t':rest)  = Just ('\t', rest)
+    go ('"':rest)       = Nothing
+    go ('\\':rest)      = Nothing
+    go (ch:rest)        =
+        if isControl ch then Nothing else Just (ch, rest)
+
+
 ------------------------------
 
 openArray :: Parser Char
@@ -194,10 +222,10 @@ jsonNull = token $ lift1 (\_ -> JsonNull) nullj
 jsonBool :: Parser Json
 jsonBool = token $ lift1 JsonBool (true <|> false)
 
-data Json 
-    = JsonInt Int 
-    | JsonBool Bool  
-    | JsonNull  
+data Json
+    = JsonInt Int
+    | JsonBool Bool
+    | JsonNull
     | JsonString String
     | JsonArray [Json]
     | JsonObject [(String, Json)]
@@ -206,4 +234,3 @@ data Json
 
 array :: Parser [Json]
 array = (token openArray) `andThen`  (many json)  `thenSkip` (token closeArray `andThen` spaces)
-
