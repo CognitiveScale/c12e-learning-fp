@@ -1,6 +1,8 @@
 module Json where
 
-import Data.Char (isDigit, isSpace, isControl)
+
+import Data.Char (isDigit, isSpace, toLower,  isControl)
+import Data.List (intercalate)
 
 
 data Parser a = Parser (String -> Maybe (a, String))
@@ -182,7 +184,6 @@ spaces = void (many space)
 token :: Parser a -> Parser a
 token p = spaces `andThen` p
 
-
 -- Parse a character that occurs inside a JSON string, including
 -- proper treatment of escape characters.
 --
@@ -200,6 +201,11 @@ char = Parser go
     go (ch:rest)        =
         if isControl ch then Nothing else Just (ch, rest)
 
+require :: Char -> Parser ()
+require c = void $ checkChar (\x -> x == c)
+
+requireToken :: Char -> Parser ()
+requireToken c = token (require c)
 
 ------------------------------
 
@@ -214,7 +220,12 @@ numbers :: Parser [Int]
 numbers = many (token number)
 
 json :: Parser Json
-json = jsonNull <|> jsonBool
+json = jsonNull
+     <|> jsonBool
+     <|> jsonInt
+     <|> jsonString
+     <|> jsonArray
+     <|> jsonObject
 
 jsonNull :: Parser Json
 jsonNull = token $ lift1 (\_ -> JsonNull) nullj
@@ -222,9 +233,33 @@ jsonNull = token $ lift1 (\_ -> JsonNull) nullj
 jsonBool :: Parser Json
 jsonBool = token $ lift1 JsonBool (true <|> false)
 
-data Json
-    = JsonInt Int
-    | JsonBool Bool
+
+jsonInt :: Parser Json
+jsonInt = token $ lift1 JsonInt number
+
+legalString = token $ (require '"') `andThen` ((many char) `thenSkip` (require '"'))
+
+jsonString :: Parser Json
+jsonString = token $ lift1 JsonString legalString
+
+jsonArray :: Parser Json
+jsonArray = token $ lift1 JsonArray array
+
+separated :: Char -> Parser a -> Parser [a]
+separated c pa = multiple <|> single <|> empty where
+  empty = lift0 []
+  single = lift1 (\x -> [x]) (token pa)
+  multiple = lift2 (\x y -> x : y) (token pa) ((requireToken c) `andThen` (c `separated` pa))
+
+jsonObject :: Parser Json
+jsonObject = token $ lift1 JsonObject object where
+  object = (requireToken '{') `andThen` (fields `thenSkip` (requireToken '}'))
+  fields = ',' `separated` field
+  field = token $ lift2 (\x y -> (x,y)) legalString ((requireToken ':') `andThen` (token json))
+
+data Json 
+    = JsonInt Int 
+    | JsonBool Bool  
     | JsonNull
     | JsonString String
     | JsonArray [Json]
@@ -233,4 +268,53 @@ data Json
 
 
 array :: Parser [Json]
-array = (token openArray) `andThen`  (many json)  `thenSkip` (token closeArray `andThen` spaces)
+array = (token openArray) `andThen` ((',' `separated` json) `thenSkip` (token closeArray `andThen` spaces))
+
+-- TODO:
+-- Enforce uniqueness of field names in objects
+-- Handle more complex escape sequences in strings
+
+-- Toy usage - prettification with variable indent
+prettyJson :: Int -> Json -> String
+prettyJson = format 0 where
+  format :: Int -> Int -> Json -> String
+  format depth indent = format_i depth where
+    format_i depth = (indentStr depth) . (format_depth depth) where
+      format_depth :: Int -> Json -> String
+      format_depth n = format_element where
+        format_element :: Json -> String
+        format_element (JsonInt i)    = show i
+        format_element (JsonBool b)   = fmap toLower $ show b
+        format_element JsonNull       = "null"
+        format_element (JsonString s) = quote s
+        format_element (JsonArray a)  = subCollection '[' ']' (format_i (n+1)) a
+        format_element (JsonObject o) = subCollection '{' '}' format_field o
+
+        format_field :: (String, Json) -> String
+        format_field (name, value) = indentStr (n+1) $ (quote name) ++ (": " ++ (format_depth (n+1) value))
+
+        subElements :: (a -> String) -> [a] -> String
+        subElements f l = intercalate (',' : [lf]) $ fmap f l
+
+        subCollection :: Char -> Char -> (a -> String) -> [a] -> String
+        subCollection start end f = (embed start end) . subElements f
+
+        embed :: Char -> Char -> String -> String
+        embed start end s = start : lf : (s ++ (lf : (indentStr n [end])))
+
+        quote s = '"' : (s ++ "\"")
+
+      indentStr :: Int -> String -> String
+      indentStr d s = (replicate (d*indent) ws) ++ s
+
+      lf = '\n'
+      ws = ' '
+
+-- test
+jsonOrEmpty :: Maybe Json -> Json
+jsonOrEmpty (Just j)  = j
+jsonOrEmpty Nothing   = JsonNull
+
+rawStr = "{ \"a\": [ 1,2, 3 ], \"b\": { \"a1\": null}}"
+j = jsonOrEmpty $ fmap fst (run json rawStr)
+testPretty n = putStrLn $ prettyJson n j
