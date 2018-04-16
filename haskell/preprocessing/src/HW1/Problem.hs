@@ -32,10 +32,28 @@ main :: IO ()
 main =
     processStdin
 
-
 processStdin :: IO ()
-processStdin =
-    error "processStdin: not implemented"
+processStdin = do
+  ls <- isEOF
+  if not ls then
+    (processLineStdin >>= putStrLn >> processStdin)
+  else
+    putStrLn "Done!"
+
+processLineStdin :: IO String
+processLineStdin =  do
+  ls <- getLine 
+  return $ processLine ls
+
+processLine :: String -> String
+processLine nums = 
+  show $ lsn ++ [ns]
+  where
+    lsn = str2ints nums
+    ns  = sum lsn
+
+str2ints :: String -> [Int]
+str2ints xs = map read (words xs)
 
 
 -- Yes, this is partial function.
