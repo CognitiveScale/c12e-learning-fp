@@ -1,6 +1,4 @@
--- executables: the module name *must* be "Main" (!)
-
-module Main where
+module Echo where
 
 
 main :: IO ()

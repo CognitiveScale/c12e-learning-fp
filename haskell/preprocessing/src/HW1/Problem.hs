@@ -1,6 +1,4 @@
--- executables: the module name *must* be "Main" (!)
-
-module Main where
+module HW1.Problem where
 
 import System.IO (isEOF)
 
