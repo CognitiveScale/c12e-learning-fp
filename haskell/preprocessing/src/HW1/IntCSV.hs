@@ -1,4 +1,4 @@
-module IntCSV
+module HW1.IntCSV
     ( readCSV, writeCSV, stdreadCSV, stdwriteCSV, parseAsCSV, CSV(..)
     ) where
 
@@ -6,7 +6,7 @@ module IntCSV
 import System.IO (isEOF)
 import Data.String.Utils
 import Data.List (intercalate)
-import WhileM
+import HW1.WhileM
 
 newtype CSV = CSV [[Int]]
 

@@ -1,4 +1,4 @@
-module WhileM
+module HW1.WhileM
     ( whileM, whileMFoldL
     ) where
 

@@ -1,8 +1,8 @@
 -- executables: the module name *must* be "Main" (!)
 
-module Main where
+module HW1.Solution_Steve where
 
-import IntCSV
+import HW1.IntCSV
 
 {----------------------------------------------------------------
 
@@ -44,4 +44,3 @@ processStdin =
     transform :: CSV -> CSV
     transform (CSV csv) = CSV $ fmap appendSum csv where
       appendSum l = l ++ [sum(l)]
-
