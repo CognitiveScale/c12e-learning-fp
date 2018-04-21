@@ -34,8 +34,8 @@ main =
 
 processStdin :: IO ()
 processStdin = do
-  ls <- isEOF
-  if not ls then
+  line <- isEOF
+  if not line then
     (processLineStdin >>= putStrLn >> processStdin)
   else
     putStrLn "Done!"
@@ -47,7 +47,7 @@ processLineStdin =  do
 
 processLine :: String -> String
 processLine nums = 
-  show $ lsn ++ [ns]
+  unwords . (map show) $ lsn ++ [ns]
   where
     lsn = str2ints nums
     ns  = sum lsn
