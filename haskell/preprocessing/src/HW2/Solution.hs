@@ -39,14 +39,13 @@ processStdin =
   if eof then
     (pure . pure) ()
   else
-    -- how is `Left` propagated to `main`??
-    processLineStdin >>= print . formatLine >> processStdin
+    {-processLineStdin >>= print . formatLine >> processStdin-}
     -- or:
-    {-do -}
-    {-r <- processLineStdin-}
-    {-case r of -}
-      {-Left msg -> pure $ Left msg-}
-      {-Right nums -> print nums >> processStdin-}
+    do 
+    r <- processLineStdin
+    case r of 
+      Right nums -> (print . (unwords . (fmap show))) nums >> processStdin
+      Left msg -> pure $ Left msg
 
 processLineStdin :: IO (Result [Int])
 processLineStdin =  
@@ -80,5 +79,5 @@ insideOut' = sequence
 insideOut :: [Result a] -> Result [a]
 insideOut [] = Right []
 insideOut ((Left i):xs) = Left i
-insideOut ((Right i):xs) = insideOut xs
+insideOut ((Right i):xs) = (insideOut xs) `sum` (Right [i])
   
