@@ -22,6 +22,11 @@ newtype Mystery r a =
 data Compose f g a =
     Compose { getCompose :: f (g a) }
 
+data Expr a
+    = Var a
+    | Lit Int
+    | Add (Expr a) (Expr a)
+
 
 {-
 
@@ -60,4 +65,8 @@ instance Functor (Mystery r) where
 
 
 instance (Functor f, Functor g) => Functor (Compose f g) where
+    fmap = undefined
+
+
+instance Functor Expr where
     fmap = undefined
